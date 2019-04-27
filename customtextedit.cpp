@@ -13,7 +13,6 @@ CustomTextEdit::CustomTextEdit(QWidget *parent) : QPlainTextEdit(parent)
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
     updateLineNumberAreaWidth(0);
-    highlightCurrentLine();
 }
 
 //![constructor]
