@@ -77,6 +77,17 @@ void CustomTextEdit::resizeEvent(QResizeEvent *e)
 void CustomTextEdit::highlightCurrentLine()
 {
     extraSelections.clear();
+    /*
+    QTextBlock block = firstVisibleBlock();
+    int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
+    int bottom = top + (int) blockBoundingRect(block).height();
+    cout<<block.blockNumber()<<" " << top<< " " <<bottom<<endl;
+
+    block = block.next();
+    top = bottom;
+    bottom = top + (int) blockBoundingRect(block).height();
+    cout<<block.blockNumber()<<" " << top<< " " <<bottom<<endl;
+*/
 
         if (!isReadOnly()) {
             QTextEdit::ExtraSelection selection;

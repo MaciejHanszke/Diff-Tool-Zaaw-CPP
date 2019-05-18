@@ -2,6 +2,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtWidgets>
+#include <iostream>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -52,31 +54,14 @@ void MainWindow::on_actionLoad_File_1_triggered()
 
     //TODO podswietl text tam gdzie zostal zmodyfikowany
         //setPosition ewidentnie lapie po numerze
-        QTextCursor tc = ui->textEditFile1->textCursor();
-        QColor lineColor = QColor(Qt::red);
-        QTextCharFormat format;
 
-        format.setBackground(lineColor);
-        format.setProperty(QTextFormat::FullWidthSelection, true);
-        QTextEdit::ExtraSelection mainCursor;
-        mainCursor.cursor.setPosition(0);
-        QList<QTextEdit::ExtraSelection> extraSelections;
-          for(int i = 0; i < 100; ++i) {
+        QTextDocument *doc = ui->textEditFile1->document();
+        std::vector<std::pair<int, bool>> dane;
+            dane.push_back( std::pair<int, bool>(1,true) );
+            dane.push_back( std::pair<int, bool>(5,false) );
+            dane.push_back( std::pair<int, bool>(10,true) );
+        colorSpecificLines(doc, dane);
 
-              if(i >10 && i <= 20){
-                  QTextEdit::ExtraSelection selection;
-                  selection.cursor.setPosition(mainCursor.cursor.position());
-                  selection.format = format;
-                  selection.cursor = tc;
-                  selection.cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, i);
-                  extraSelections.append(selection);
-              }
-            mainCursor.cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, i);
-            // selection.cursor.mergeCharFormat(selection.format);
-
-          }
-          ui->textEditFile1->setExtraSelections(extraSelections);
-          //End todo
 }
 
 void MainWindow::on_actionLoad_File_2_triggered()
@@ -88,6 +73,26 @@ void MainWindow::on_actionLoad_File_2_triggered()
                 ui->saveFile2Button->setEnabled(true);
                 ui->textEditFile2->setEnabled(true);
             }
+}
+
+void MainWindow::colorSpecificLines(QTextDocument *doc, std::vector<std::pair<int, bool>> linesToColour ){
+    for(int i = 0; i< linesToColour.size(); i++)
+    {
+        QTextBlock block = doc->findBlockByNumber(linesToColour[i].first);
+        if(block.blockNumber() != -1){
+            QTextCursor cursor(block);
+
+            QTextBlockFormat blockFormat = cursor.blockFormat();
+            if(linesToColour[i].second)
+                blockFormat.setBackground(QColor(158,255,158));
+            else {
+                blockFormat.setBackground(QColor(255,117,117));
+            }
+            cursor.setBlockFormat(blockFormat);
+
+
+        }
+    }
 }
 
 void MainWindow::on_actionSave_File_1_triggered()
@@ -153,4 +158,9 @@ void MainWindow::SaveFileDialog(){
 void MainWindow::on_actionExit_triggered()
 {
     QApplication::exit();
+}
+
+void MainWindow::on_actionSave_File_3_triggered()
+{
+    SaveFileDialog();
 }
