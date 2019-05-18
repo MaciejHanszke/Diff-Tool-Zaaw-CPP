@@ -27,8 +27,9 @@ int CustomTextEdit::lineNumberAreaWidth()
         max /= 10;
         ++digits;
     }
-
-    int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits;
+    int space_from_beginning = 2;
+    int one_letter_width = 6;
+    int space = space_from_beginning + digits + (one_letter_width * digits);
 
     return space;
 }
