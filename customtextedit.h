@@ -18,6 +18,8 @@ class LineNumberArea;
 class CustomTextEdit : public QPlainTextEdit
 {
     Q_OBJECT
+    QList<QTextEdit::ExtraSelection> extraSelections;
+    std::vector<int> errors;
 
 public:
     CustomTextEdit(QWidget *parent = 0);

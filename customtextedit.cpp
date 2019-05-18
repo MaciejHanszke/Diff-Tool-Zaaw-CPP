@@ -1,6 +1,9 @@
 #include <QtWidgets>
+#include <iostream>
+using namespace std;
 
 #include "customtextedit.h"
+#include <cmath>
 
 //![constructor]
 
@@ -23,10 +26,7 @@ int CustomTextEdit::lineNumberAreaWidth()
 {
     int digits = 1;
     int max = qMax(1, blockCount());
-    while (max >= 10) {
-        max /= 10;
-        ++digits;
-    }
+    digits = max == 0 ? 1 : log10(std::abs(max)) + 1;
     int space_from_beginning = 2;
     int one_letter_width = 6;
     int space = space_from_beginning + digits + (one_letter_width * digits);
@@ -76,21 +76,21 @@ void CustomTextEdit::resizeEvent(QResizeEvent *e)
 
 void CustomTextEdit::highlightCurrentLine()
 {
-    QList<QTextEdit::ExtraSelection> extraSelections;
+    extraSelections.clear();
 
-    if (!isReadOnly()) {
-        QTextEdit::ExtraSelection selection;
+        if (!isReadOnly()) {
+            QTextEdit::ExtraSelection selection;
 
-        QColor lineColor = QColor(128,194,255);
+            QColor lineColor = QColor(128,194,255);
 
-        selection.format.setBackground(lineColor);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = textCursor();
-        selection.cursor.clearSelection();
-        extraSelections.append(selection);
-    }
+            selection.format.setBackground(lineColor);
+            selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+            selection.cursor = textCursor();
+            //selection.cursor.clearSelection();
+            extraSelections.append(selection);
+        }
 
-    setExtraSelections(extraSelections);
+        setExtraSelections(extraSelections);
 }
 
 //![cursorPositionChanged]

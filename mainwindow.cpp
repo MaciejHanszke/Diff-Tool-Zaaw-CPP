@@ -50,6 +50,33 @@ void MainWindow::on_actionLoad_File_1_triggered()
                 ui->textEditFile1->setEnabled(true);
             }
 
+    //TODO podswietl text tam gdzie zostal zmodyfikowany
+        //setPosition ewidentnie lapie po numerze
+        QTextCursor tc = ui->textEditFile1->textCursor();
+        QColor lineColor = QColor(Qt::red);
+        QTextCharFormat format;
+
+        format.setBackground(lineColor);
+        format.setProperty(QTextFormat::FullWidthSelection, true);
+        QTextEdit::ExtraSelection mainCursor;
+        mainCursor.cursor.setPosition(0);
+        QList<QTextEdit::ExtraSelection> extraSelections;
+          for(int i = 0; i < 100; ++i) {
+
+              if(i >10 && i <= 20){
+                  QTextEdit::ExtraSelection selection;
+                  selection.cursor.setPosition(mainCursor.cursor.position());
+                  selection.format = format;
+                  selection.cursor = tc;
+                  selection.cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, i);
+                  extraSelections.append(selection);
+              }
+            mainCursor.cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, i);
+            // selection.cursor.mergeCharFormat(selection.format);
+
+          }
+          ui->textEditFile1->setExtraSelections(extraSelections);
+          //End todo
 }
 
 void MainWindow::on_actionLoad_File_2_triggered()
