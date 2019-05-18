@@ -134,6 +134,18 @@ void MainWindow::SaveFileFromTextEdit(QString & fileVar, QPlainTextEdit * textEd
     QMessageBox::warning(this, "Save file successful!", notice);
 }
 
+void MainWindow::SaveFileDialog(){
+    QString filename = QFileDialog::getSaveFileName(this, "Save as");
+    QFile file(filename);
+    if(!file.open(QFile::WriteOnly | QFile::Text)){
+        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
+        return;
+    }
+    QTextStream out(&file);
+    QString text = ui->textEditFile3->toPlainText();
+    out << text;
+    file.close();
+}
 
 
 

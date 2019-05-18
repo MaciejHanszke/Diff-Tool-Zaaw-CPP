@@ -21,6 +21,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void SaveFileDialog();
 private slots:
     bool loadFileToTextEdit(QString & fileVar, QLineEdit * file_name, QPlainTextEdit * textEdit);
     void SaveFileFromTextEdit(QString & fileVar, QPlainTextEdit * textEdit);

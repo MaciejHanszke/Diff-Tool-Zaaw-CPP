@@ -100,6 +100,7 @@ void CustomTextEdit::highlightCurrentLine()
 void CustomTextEdit::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(lineNumberArea);
+
     painter.fillRect(event->rect(), Qt::lightGray);
 
 //![extraAreaPaintEvent_0]
