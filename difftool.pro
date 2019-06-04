@@ -27,11 +27,13 @@ CONFIG += c++11
 SOURCES += \
         customtextedit.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    lcs.cpp
 
 HEADERS += \
         customtextedit.h \
-        mainwindow.h
+        mainwindow.h \
+    lcs.h
 
 FORMS += \
         mainwindow.ui
