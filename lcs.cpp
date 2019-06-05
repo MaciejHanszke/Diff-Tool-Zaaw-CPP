@@ -24,8 +24,80 @@ namespace  {
 
 Lcs::Lcs()
 {
-
+    currentLevel=0;
+    currentLeftParent = nullptr;
+    currentRightParent = nullptr;
 }
+
+//   #####################################
+//   ################ api ################
+//   #####################################
+
+void Lcs::initiate(const QString &text1, const QString &text2){
+    checkRelations(text1, text2, 0, levelZeroRelations1, levelZeroRelations2);
+    return;
+}
+
+int Lcs::getRelationTypeLeft(int idxLeft){
+    if(!currentLevel){
+        return levelZeroRelations1[idxLeft].typeOfReleation;
+    } else {
+        return currentLeftParent->children[idxLeft].typeOfReleation;
+    }
+    return -1;
+}
+
+int Lcs::getRelationTypeRight(int idxRight){
+    if(!currentLevel){
+        return levelZeroRelations2[idxRight].typeOfReleation;
+    } else {
+        return currentRightParent->children[idxRight].typeOfReleation;
+    }
+    return -1;
+}
+
+bool Lcs::incrementLevelFromLeft(int idxLeft){
+    if(currentLevel==SEPARATORS.size()-1){
+        return false;
+    }
+    if(!currentLevel){
+        currentLeftParent = &levelZeroRelations1[idxLeft];
+    } else {
+        currentLeftParent = &currentLeftParent->children[idxLeft];
+    }
+    currentRightParent = &levelZeroRelations2[currentLeftParent->releativesIndex];
+    ++currentLevel;
+    return true;
+}
+
+bool Lcs::incrementLevelFromRight(int idxRight){
+    if(currentLevel==SEPARATORS.size()-1){
+        return false;
+    }
+    if(!currentLevel){
+        currentRightParent = &levelZeroRelations2[idxRight];
+    } else {
+        currentRightParent = &currentRightParent->children[idxRight];
+    }
+    currentLeftParent = &levelZeroRelations1[currentRightParent->releativesIndex];
+    ++currentLevel;
+    return true;
+}
+
+bool Lcs::decrementLevel(){
+    if(!currentLevel){
+        return false;
+    }
+    currentLeftParent = currentLeftParent->parent;
+    currentRightParent = currentRightParent->parent;
+    --currentLevel;
+    return true;
+}
+
+//   #####################################
+//   ############## end api ##############
+//   #####################################
+
 
 void Lcs::test(){
     std::cout<<"lol"<<std::endl;
@@ -153,7 +225,8 @@ Lcs::relation::~relation(){
 }
 
 int Lcs::checkRelations(const QString &text1, const QString &text2, int level,
-                    std::vector<relation> &rel1, std::vector<relation> &rel2){
+                        std::vector<relation> &rel1, std::vector<relation> &rel2,
+                        relation *parent1, relation *parent2){
     int decision = UNMATCHED;
     std::cout<<level<<std::endl;
     //split texts into lists
@@ -164,7 +237,7 @@ int Lcs::checkRelations(const QString &text1, const QString &text2, int level,
     int len2 = getNumberOfLines(list2);
 
 
-    int matched = checkListsRelations(list1, list2, rel1, rel2);
+    int matched = checkListsRelations(list1, list2, rel1, rel2, parent1, parent2);
     int moved = markMoved(rel1, rel2, list1, list2);
 
     if(level==SEPARATORS.size()-1){
@@ -182,7 +255,9 @@ int Lcs::checkRelations(const QString &text1, const QString &text2, int level,
                     continue;
                 } else {
                 int decision_in = checkRelations(list1[i], list2[j], level+1,
-                                               rel1[i].children, rel2[j].children);
+                                                 rel1[i].children, rel2[j].children,
+
+                                                 &rel1[i], &rel2[j]);
                 if(decision_in>UNMATCHED){
                     ++marked;
                     rel1[i].typeOfReleation = CHANGED;
@@ -219,12 +294,16 @@ void Lcs::clearRelation(relation &rel){
 }
 
 int Lcs::checkListsRelations(const QStringList &list1, const QStringList &list2,
-                         std::vector<relation> &rel1, std::vector<relation> &rel2){
+                             std::vector<relation> &rel1, std::vector<relation> &rel2,
+                             relation *parent1, relation *parent2){
     int len1 = getNumberOfLines(list1);
     int len2 = getNumberOfLines(list2);
 
     rel1.resize(len1);
     rel2.resize(len2);
+
+    std::for_each(rel1.begin(), rel1.end(), [&](relation &r){r.parent=parent1;});
+    std::for_each(rel2.begin(), rel2.end(), [&](relation &r){r.parent=parent2;});
 
     //get first level lcs matrix and mark all matches as moved
     int** lcsMatrix = getLcsMatrix(list1, list2);

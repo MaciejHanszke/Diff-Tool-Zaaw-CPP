@@ -16,9 +16,13 @@ class Lcs
 {
 public:
     Lcs();
-    int** getLcsMatrix();
     void test();
-
+    void initiate(const QString &text1, const QString &text2);
+    int getRelationTypeLeft(int idxLeft);
+    int getRelationTypeRight(int idxRight);
+    bool incrementLevelFromLeft(int idxLeft);
+    bool incrementLevelFromRight(int idxRight);
+    bool decrementLevel();
 
 private:
 
@@ -32,10 +36,14 @@ private:
         relation* parent;
     };
 
+    uint currentLevel;
+    relation *currentLeftParent;
+    relation *currentRightParent;
 
     std::vector<relation> levelZeroRelations1;
     std::vector<relation> levelZeroRelations2;
 
+    int** getLcsMatrix();
     bool createLcsMatrix(const QString &text1, const QString &text2);
     int getNumberOfLines(const QString &text);
     int getNumberOfLines(const QStringList &textList);
@@ -46,10 +54,14 @@ private:
     int markMoved(std::vector<relation> &rel1, std::vector<relation> &rel2,
                    const QStringList &list1, const QStringList &list2);
     int checkListsRelations(const QStringList &list1, const QStringList &list2,
-                            std::vector<relation> &rel1, std::vector<relation> &rel2);
+                            std::vector<relation> &rel1, std::vector<relation> &rel2,
+                            relation *parent1 = nullptr,
+                            relation *parent2 = nullptr);
     int checkRelations(const QString &text1, const QString &text2, int level,
                        std::vector<relation> &rel1,
-                       std::vector<relation> &rel2);
+                       std::vector<relation> &rel2,
+                       relation *parent1 = nullptr,
+                       relation *parent2 = nullptr);
     void clearRelation(relation &rel);
     QStringList separate(const QString &text, int level);
     int getContainedSize(const QString &container,
