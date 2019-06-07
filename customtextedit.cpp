@@ -18,7 +18,7 @@ QColor CustomTextEdit::getColor(int relation){
             return (QColor(158,255,158));
 
         case 1:
-            return (QColor(255,158,158));
+            return (QColor(255,210,158));
 
         case 2:
             return (QColor(158,158,255));
@@ -36,7 +36,7 @@ QColor CustomTextEdit::getColor(int relation){
            return (QColor(255,158,158));
 
         case 1:
-           return (QColor(158,255,158));
+           return (QColor(255,210,158));
 
         case 2:
             return (QColor(158,158,255));
