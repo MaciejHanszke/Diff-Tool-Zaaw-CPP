@@ -207,7 +207,7 @@ void CustomTextEdit::lineNumberAreaPaintEvent(QPaintEvent *event)
         top = bottom;
         bottom = top + (int) blockBoundingRect(block).height();
         ++blockNumber;
-        //TODO podpiac kolorowanie przy nacisnieciu bloku
+
     }
 }
 //![extraAreaPaintEvent_2]

@@ -338,8 +338,6 @@
     <addaction name="actionLoad_File_2"/>
     <addaction name="actionSave_File_2"/>
     <addaction name="separator"/>
-    <addaction name="actionSave_File_3"/>
-    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
