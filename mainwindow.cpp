@@ -55,10 +55,18 @@ void MainWindow::on_actionLoad_File_1_triggered()
                 ui->textEditFile1->setEnabled(true);
             }
         std::map<int, std::pair<int,int>>map;
-        map[0] = std::pair<int,int>(1,0);
-        map[1] = std::pair<int,int>(1,0);
-        map[4] = std::pair<int,int>(2,1);
-        map[8] = std::pair<int,int>(3,2);
+        QStringList listLeft =  textLeft.separate("\n"); //tu wstaw texty
+        QStringList listRight = testRight.separate("\n");
+
+        Lcs l;
+        l.initiate(textLeft, textRight);
+        for(int i=0; i<listLeft.size();++i){
+            std::pair<int, int> p = std::make_pair(l.getRelaionTypeLeft(i),
+                                                   l.getRelationIndexLeft(i));
+            std::pair<int, std::pair<int,int>> ip = std::make_pair(i, p);
+            map.insert(ip);
+        }
+
 
         ui->textEditFile1->setRelationMap(map);
 
