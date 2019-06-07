@@ -8,6 +8,6 @@ TEMPLATE = app
 
 SOURCES += \
             ../lcs.cpp \
-    tst_lcs_init_test.cpp
+    tst_lcs_test.cpp
 
 HEADERS += ../lcs.h
