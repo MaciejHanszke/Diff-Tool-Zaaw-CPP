@@ -3,6 +3,7 @@
 
 #include <QPlainTextEdit>
 #include <QObject>
+#include <map>
 
 QT_BEGIN_NAMESPACE
 class QPaintEvent;
@@ -19,7 +20,9 @@ class CustomTextEdit : public QPlainTextEdit
 {
     Q_OBJECT
     QList<QTextEdit::ExtraSelection> extraSelections;
-    std::vector<int> errors;
+    //potrzebne sa 3 wartosci: linia w której został dokonany edit, typ editu(add/delete), oraz numer relacji
+    std::map<int, std::pair<int,int>>relationMap;
+    int sizeOfRelationLine = 0;
 
 public:
     CustomTextEdit(QWidget *parent = 0);
@@ -27,6 +30,15 @@ public:
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
 
+
+    std::vector<std::tuple<int, int, int> > getRelations() const;
+    void setRelations(const std::vector<std::tuple<int, int, int> > &value);
+
+    QColor getColor(int relation);
+    std::map<int, std::pair<int, int> > getRelationMap() const;
+    void setRelationMap(const std::map<int, std::pair<int, int> > &value);
+
+    int getRelationAreaWidth();
 protected:
     void resizeEvent(QResizeEvent *event) override;
 

@@ -3,6 +3,7 @@
 #include "ui_mainwindow.h"
 #include <QtWidgets>
 #include <iostream>
+#include <map>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -51,16 +52,13 @@ void MainWindow::on_actionLoad_File_1_triggered()
                 ui->saveFile1Button->setEnabled(true);
                 ui->textEditFile1->setEnabled(true);
             }
+        std::map<int, std::pair<int,int>>map;
+        map[0] = std::pair<int,int>(1,0);
+        map[1] = std::pair<int,int>(1,0);
+        map[4] = std::pair<int,int>(2,1);
+        map[8] = std::pair<int,int>(3,2);
 
-    //TODO podswietl text tam gdzie zostal zmodyfikowany
-        //setPosition ewidentnie lapie po numerze
-
-        QTextDocument *doc = ui->textEditFile1->document();
-        std::vector<std::pair<int, bool>> dane;
-            dane.push_back( std::pair<int, bool>(1,true) );
-            dane.push_back( std::pair<int, bool>(5,false) );
-            dane.push_back( std::pair<int, bool>(10,true) );
-        colorSpecificLines(doc, dane);
+        ui->textEditFile1->setRelationMap(map);
 
 }
 
@@ -73,26 +71,6 @@ void MainWindow::on_actionLoad_File_2_triggered()
                 ui->saveFile2Button->setEnabled(true);
                 ui->textEditFile2->setEnabled(true);
             }
-}
-
-void MainWindow::colorSpecificLines(QTextDocument *doc, std::vector<std::pair<int, bool>> linesToColour ){
-    for(int i = 0; i< linesToColour.size(); i++)
-    {
-        QTextBlock block = doc->findBlockByNumber(linesToColour[i].first);
-        if(block.blockNumber() != -1){
-            QTextCursor cursor(block);
-
-            QTextBlockFormat blockFormat = cursor.blockFormat();
-            if(linesToColour[i].second)
-                blockFormat.setBackground(QColor(158,255,158));
-            else {
-                blockFormat.setBackground(QColor(255,117,117));
-            }
-            cursor.setBlockFormat(blockFormat);
-
-
-        }
-    }
 }
 
 void MainWindow::on_actionSave_File_1_triggered()
@@ -147,8 +125,6 @@ void MainWindow::SaveFileDialog(){
         return;
     }
     QTextStream out(&file);
-    QString text = ui->textEditFile3->toPlainText();
-    out << text;
     file.close();
 }
 

@@ -7,6 +7,55 @@ using namespace std;
 
 //![constructor]
 
+
+
+QColor CustomTextEdit::getColor(int relation){
+    switch( relation )
+    {
+    case 1:
+        return (QColor(158,255,158));
+
+    case 2:
+        return (QColor(255,158,158));
+
+    case 3:
+        return (QColor(158,158,255));
+
+    default:
+        return (QColor(255,255,255));
+    }
+}
+
+std::map<int, std::pair<int, int> > CustomTextEdit::getRelationMap() const
+{
+    return relationMap;
+}
+
+void CustomTextEdit::setRelationMap(const std::map<int, std::pair<int, int> > &value)
+{
+    relationMap = value;
+    QTextDocument * doc = this->document();
+    std::map<int, std::pair<int, int> >::iterator it;
+    int biggestRelationNumber = 0;
+    for (it = relationMap.begin(); it != relationMap.end(); it++)
+        {
+            QTextBlock block = doc->findBlockByNumber(it->first);
+            if(block.blockNumber() != -1){
+                QTextCursor cursor(block);
+                QTextBlockFormat blockFormat = cursor.blockFormat();
+                blockFormat.setBackground(getColor(it->second.first));
+                cursor.setBlockFormat(blockFormat);
+                if(it->second.second > biggestRelationNumber)
+                {
+                    biggestRelationNumber = it->second.second;
+                    std::cout<<biggestRelationNumber;
+                }
+            }
+        }
+    sizeOfRelationLine = biggestRelationNumber;
+    //repaint();
+}
+
 CustomTextEdit::CustomTextEdit(QWidget *parent) : QPlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
@@ -29,9 +78,19 @@ int CustomTextEdit::lineNumberAreaWidth()
     digits = max == 0 ? 1 : log10(std::abs(max)) + 1;
     int space_from_beginning = 2;
     int one_letter_width = 6;
+
     int space = space_from_beginning + digits + (one_letter_width * digits);
 
-    return space;
+    return space+getRelationAreaWidth();
+}
+
+int CustomTextEdit::getRelationAreaWidth(){
+    int space_from_beginning = 2;
+    int one_letter_width = 6;
+    int max = sizeOfRelationLine;
+    int digits = max == 0 ? 1 : log10(std::abs(max)) + 1;
+    int relationSpace = space_from_beginning + digits + (one_letter_width * digits);
+    return relationSpace;
 }
 
 //![extraAreaWidth]
@@ -77,18 +136,6 @@ void CustomTextEdit::resizeEvent(QResizeEvent *e)
 void CustomTextEdit::highlightCurrentLine()
 {
     extraSelections.clear();
-    /*
-    QTextBlock block = firstVisibleBlock();
-    int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
-    int bottom = top + (int) blockBoundingRect(block).height();
-    cout<<block.blockNumber()<<" " << top<< " " <<bottom<<endl;
-
-    block = block.next();
-    top = bottom;
-    bottom = top + (int) blockBoundingRect(block).height();
-    cout<<block.blockNumber()<<" " << top<< " " <<bottom<<endl;
-*/
-
         if (!isReadOnly()) {
             QTextEdit::ExtraSelection selection;
 
@@ -111,8 +158,9 @@ void CustomTextEdit::highlightCurrentLine()
 void CustomTextEdit::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(lineNumberArea);
-
-    painter.fillRect(event->rect(), Qt::lightGray);
+    int relationWidth = getRelationAreaWidth();
+    painter.fillRect(event->rect().x(),event->rect().y(), event->rect().width(), event->rect().height(), Qt::black);
+    painter.fillRect(event->rect().x(),event->rect().y(), event->rect().width()-relationWidth, event->rect().height(), Qt::lightGray);
 
 //![extraAreaPaintEvent_0]
 
@@ -128,9 +176,19 @@ void CustomTextEdit::lineNumberAreaPaintEvent(QPaintEvent *event)
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
             painter.setPen(Qt::black);
-            painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(),
+            painter.drawText(0, top, lineNumberArea->width()-relationWidth, fontMetrics().height(),
                              Qt::AlignRight, number);
+
+            auto pair = relationMap[blockNumber];
+            if(pair.first != 0)
+            {
+                QString pairnumber = QString::number(pair.second + 1);
+                painter.setPen(getColor(pair.first));
+                painter.drawText(0, top, lineNumberArea->width(), fontMetrics().height(),
+                                 Qt::AlignRight, pairnumber);
+            }
         }
+
 
         block = block.next();
         top = bottom;
