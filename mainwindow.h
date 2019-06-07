@@ -23,6 +23,7 @@ public:
 
     void SaveFileDialog();
     void colorSpecificLines(QTextDocument *doc, std::vector<std::pair<int, bool> > linesToColour);
+    void applyRelationsToTextEdits();
 private slots:
     bool loadFileToTextEdit(QString & fileVar, QLineEdit * file_name, QPlainTextEdit * textEdit);
     void SaveFileFromTextEdit(QString & fileVar, QPlainTextEdit * textEdit);

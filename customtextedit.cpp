@@ -12,14 +12,17 @@ using namespace std;
 QColor CustomTextEdit::getColor(int relation){
     switch( relation )
     {
-    case 1:
+    case 0:
         return (QColor(158,255,158));
 
-    case 2:
+    case 1:
         return (QColor(255,158,158));
 
-    case 3:
+    case 2:
         return (QColor(158,158,255));
+
+    case 3:
+        return (QColor(255,255,255));
 
     default:
         return (QColor(255,255,255));
@@ -29,6 +32,7 @@ QColor CustomTextEdit::getColor(int relation){
 std::map<int, std::pair<int, int> > CustomTextEdit::getRelationMap() const
 {
     return relationMap;
+
 }
 
 void CustomTextEdit::setRelationMap(const std::map<int, std::pair<int, int> > &value)
@@ -44,7 +48,11 @@ void CustomTextEdit::setRelationMap(const std::map<int, std::pair<int, int> > &v
             if(block.blockNumber() != -1){
                 QTextCursor cursor(block);
                 QTextBlockFormat blockFormat = cursor.blockFormat();
-                blockFormat.setBackground(getColor(it->second.first));
+                int val = it->second.first;
+                if(isLeft && val == 0)
+                    blockFormat.setBackground(getColor(1));
+                else
+                    blockFormat.setBackground(getColor(it->second.first));
                 cursor.setBlockFormat(blockFormat);
                 if(it->second.second > biggestRelationNumber)
                 {
@@ -53,6 +61,16 @@ void CustomTextEdit::setRelationMap(const std::map<int, std::pair<int, int> > &v
             }
         }
     //repaint();
+}
+
+bool CustomTextEdit::getIsLeft() const
+{
+    return isLeft;
+}
+
+void CustomTextEdit::setIsLeft(bool value)
+{
+    isLeft = value;
 }
 
 CustomTextEdit::CustomTextEdit(QWidget *parent) : QPlainTextEdit(parent)
