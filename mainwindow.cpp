@@ -92,14 +92,11 @@ void MainWindow::applyRelationsToTextEdits(){
 
         ui->textEditFile1->setRelationMap(map);
 
-
-        Lcs r;
-        r.initiate(textRight, textLeft);
         std::map<int, std::pair<int,int>>map2;
 
-        for(int i=0; i<listLeft.size();++i){
-           std::pair<int, int> p = std::make_pair(r.getRelationTypeRight(i),
-                                                        r.getRelationIndexRight(i));
+        for(int i=0; i<listRight.size();++i){
+           std::pair<int, int> p = std::make_pair(l.getRelationTypeRight(i),
+                                                        l.getRelationIndexRight(i));
            std::pair<int, std::pair<int,int>> ip = std::make_pair(i, p);
            map2.insert(ip);
         }
