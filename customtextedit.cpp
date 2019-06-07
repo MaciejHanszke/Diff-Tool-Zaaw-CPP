@@ -35,8 +35,9 @@ void CustomTextEdit::setRelationMap(const std::map<int, std::pair<int, int> > &v
 {
     relationMap = value;
     QTextDocument * doc = this->document();
+    //std::cout<<this->toPlainText().toStdString();
     std::map<int, std::pair<int, int> >::iterator it;
-    int biggestRelationNumber = 0;
+    biggestRelationNumber = 0;
     for (it = relationMap.begin(); it != relationMap.end(); it++)
         {
             QTextBlock block = doc->findBlockByNumber(it->first);
@@ -48,11 +49,9 @@ void CustomTextEdit::setRelationMap(const std::map<int, std::pair<int, int> > &v
                 if(it->second.second > biggestRelationNumber)
                 {
                     biggestRelationNumber = it->second.second;
-                    std::cout<<biggestRelationNumber;
                 }
             }
         }
-    sizeOfRelationLine = biggestRelationNumber;
     //repaint();
 }
 
@@ -87,8 +86,7 @@ int CustomTextEdit::lineNumberAreaWidth()
 int CustomTextEdit::getRelationAreaWidth(){
     int space_from_beginning = 2;
     int one_letter_width = 6;
-    int max = sizeOfRelationLine;
-    int digits = max == 0 ? 1 : log10(std::abs(max)) + 1;
+    int digits = biggestRelationNumber == 0 ? 1 : log10(std::abs(biggestRelationNumber)) + 1;
     int relationSpace = space_from_beginning + digits + (one_letter_width * digits);
     return relationSpace;
 }
@@ -115,6 +113,16 @@ void CustomTextEdit::updateLineNumberArea(const QRect &rect, int dy)
 
     if (rect.contains(viewport()->rect()))
         updateLineNumberAreaWidth(0);
+}
+
+QLabel *CustomTextEdit::getCursorCurPos() const
+{
+    return cursorCurPos;
+}
+
+void CustomTextEdit::setCursorCurPos(QLabel *value)
+{
+    cursorCurPos = value;
 }
 
 //![slotUpdateRequest]
@@ -146,6 +154,11 @@ void CustomTextEdit::highlightCurrentLine()
             selection.cursor = textCursor();
             //selection.cursor.clearSelection();
             extraSelections.append(selection);
+            if(cursorCurPos!=NULL)
+            {
+                QString curPosText = "Ln: " + QString::number(selection.cursor.blockNumber()+1) + ", Col: " + QString::number(selection.cursor.columnNumber()+1) ;
+                cursorCurPos->setText(curPosText);
+            }
         }
 
         setExtraSelections(extraSelections);

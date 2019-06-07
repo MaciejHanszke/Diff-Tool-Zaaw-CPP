@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     window->setLayout(ui->horizontalLayout);
     setCentralWidget(window);
     QMainWindow::showMaximized();
+    ui->textEditFile1->setCursorCurPos(ui->file1_cursor_pos_text);
+    ui->textEditFile2->setCursorCurPos(ui->file2_cursor_pos_text);
 }
 
 MainWindow::~MainWindow()
