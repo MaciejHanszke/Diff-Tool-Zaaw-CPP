@@ -120,11 +120,20 @@ bool Lcs::incrementLevelFromLeft(int idxLeft){
         throw IncrementingEmptySideException();
     }
     if(!currentLevel){
-        currentLeftParent = &levelZeroRelations1.at(idxLeft);
+        currentLeftParent = &levelZeroRelations1[idxLeft];
+        if(currentLeftParent->releativesIndex!=NO_RELATIVES){
+            currentRightParent = &levelZeroRelations2[currentLeftParent->releativesIndex];
+        } else {
+            currentRightParent = nullptr;
+        }
     } else {
         currentLeftParent = &currentLeftParent->children.at(idxLeft);
+        if(currentLeftParent->releativesIndex!=NO_RELATIVES){
+            currentRightParent = &currentRightParent->children[currentLeftParent->releativesIndex];
+        } else {
+            currentRightParent = nullptr;
+        }
     }
-    currentRightParent = &levelZeroRelations2[currentLeftParent->releativesIndex];
     ++currentLevel;
     return true;
 }
@@ -139,10 +148,19 @@ bool Lcs::incrementLevelFromRight(int idxRight){
     }
     if(!currentLevel){
         currentRightParent = &levelZeroRelations2.at(idxRight);
+        if(currentRightParent->releativesIndex!=NO_RELATIVES){
+            currentLeftParent = &levelZeroRelations1[currentRightParent->releativesIndex];
+        } else {
+            currentLeftParent = nullptr;
+        }
     } else {
         currentRightParent = &currentRightParent->children.at(idxRight);
+        if(currentRightParent->releativesIndex!=NO_RELATIVES){
+            currentLeftParent = &currentLeftParent->children[currentRightParent->releativesIndex];
+        } else {
+            currentLeftParent = nullptr;
+        }
     }
-    currentLeftParent = &levelZeroRelations1[currentRightParent->releativesIndex];
     ++currentLevel;
     return true;
 }
@@ -162,12 +180,18 @@ bool Lcs::decrementLevel(){
 bool Lcs::changeRelation(int relationType, int idxLeft, int idxRight){
     if(state == Lcs::State::UNINICIATED){
         throw UniniciatedException();
-    } else if(currentLevel==SEPARATORS.size()-1){
+    } else if(currentLevel==SEPARATORS.size()){
         throw ChangingMaxLevelException();
     }
     if(currentLevel == 0 ){
         if(levelZeroRelations1.empty() || levelZeroRelations2.empty()){
             throw std::out_of_range("trying to change empty vector");
+        } if (levelZeroRelations1.at(idxLeft).releativesIndex!=Lcs::NO_RELATIVES){
+            levelZeroRelations2.at(levelZeroRelations1.at(idxLeft).releativesIndex).releativesIndex=Lcs::NO_RELATIVES;
+            levelZeroRelations2.at(levelZeroRelations1.at(idxLeft).releativesIndex).typeOfReleation=Lcs::UNMATCHED;
+        } if (levelZeroRelations2.at(idxRight).releativesIndex!=Lcs::NO_RELATIVES){
+            levelZeroRelations1.at(levelZeroRelations2.at(idxRight).releativesIndex).releativesIndex=Lcs::NO_RELATIVES;
+            levelZeroRelations1.at(levelZeroRelations2.at(idxRight).releativesIndex).typeOfReleation=Lcs::UNMATCHED;
         }
         levelZeroRelations1.at(idxLeft).releativesIndex=idxRight;
         levelZeroRelations2.at(idxRight).releativesIndex=idxLeft;
@@ -177,6 +201,12 @@ bool Lcs::changeRelation(int relationType, int idxLeft, int idxRight){
         if(currentLeftParent->children.empty() ||
                 currentRightParent->children.empty()){
             throw std::out_of_range("trying to change empty vector");
+        } if(currentLeftParent->children.at(idxLeft).releativesIndex!=Lcs::NO_RELATIVES){
+            currentRightParent->children.at(currentLeftParent->children.at(idxLeft).releativesIndex).releativesIndex=Lcs::NO_RELATIVES;
+            currentRightParent->children.at(currentLeftParent->children.at(idxLeft).releativesIndex).typeOfReleation=Lcs::UNMATCHED;
+        } if(currentRightParent->children.at(idxRight).releativesIndex!=Lcs::NO_RELATIVES){
+            currentLeftParent->children.at(currentRightParent->children.at(idxRight).releativesIndex).releativesIndex=Lcs::NO_RELATIVES;
+            currentLeftParent->children.at(currentRightParent->children.at(idxRight).releativesIndex).typeOfReleation=Lcs::UNMATCHED;
         }
         currentLeftParent->children.at(idxLeft).releativesIndex=idxRight;
         currentRightParent->children.at(idxRight).releativesIndex=idxLeft;
@@ -208,45 +238,6 @@ void Lcs::initRelations(const QString &text, std::vector<relation> &rel,
         for(int i=0; i<len; ++i){
             initRelations(list[i], rel[i].children, level+1, &rel[i]);
         }
-    }
-    return;
-}
-
-
-void Lcs::test(){
-    QString text1, text2;
-    QFile graphFile("one");
-    std::cout<<"fuck"<<std::endl;
-    if (!graphFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-        std::cout<<"fuck"<<std::endl;
-        return;}
-    QTextStream in(&graphFile);
-    text1=in.readAll();
-    graphFile.close();
-    QFile file("two");
-    std::cout<<"fuck"<<std::endl;
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-        std::cout<<"lol2"<<std::endl;
-        return;}
-    QTextStream in2(&file);
-    text2=in2.readAll();
-    file.close();
-    std::cout<<"fuck"<<std::endl;
-
-   initiate(text1, text2);
-
-    std::cout<<"left level o"<<std::endl;
-    std::vector<relation> &x = levelZeroRelations1;
-    std::vector<relation> &y = levelZeroRelations2;
-
-    for(uint i=0; i<levelZeroRelations1.size();++i){
-        std::cout<<levelZeroRelations1[i].typeOfReleation<<":"
-                <<levelZeroRelations1[i].releativesIndex<<std::endl;
-    }
-
-    for(uint i=0; i<levelZeroRelations2.size();++i){
-        std::cout<<levelZeroRelations2[i].typeOfReleation<<":"
-                <<levelZeroRelations2[i].releativesIndex<<std::endl;
     }
     return;
 }
@@ -353,7 +344,7 @@ int Lcs::checkRelations(const QString &text1, const QString &text2, uint level,
     int moved = markMoved(rel1, rel2, list1, list2);
 
     if(level==SEPARATORS.size()-1){
-        if(matched+moved >= 1+std::floor(len1*0.4)){
+        if(matched+moved >= 1+std::floor(len1*0.6)){
             return CHANGED;
         }
     } else {
@@ -381,7 +372,7 @@ int Lcs::checkRelations(const QString &text1, const QString &text2, uint level,
                 }}
             }}
         }
-        if(matched+moved+std::floor(marked*0.75)>= 1+std::floor(len1*0.4)){
+        if(matched+moved+marked>= 1+std::floor(len1*0.6)){
             return CHANGED;
         }
     }
