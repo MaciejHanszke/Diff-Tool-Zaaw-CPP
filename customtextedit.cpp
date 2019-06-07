@@ -10,22 +10,43 @@ using namespace std;
 
 
 QColor CustomTextEdit::getColor(int relation){
-    switch( relation )
+    if(!isLeft)
     {
-    case 0:
-        return (QColor(158,255,158));
+        switch( relation )
+        {
+        case 0:
+            return (QColor(158,255,158));
 
-    case 1:
-        return (QColor(255,158,158));
+        case 1:
+            return (QColor(255,158,158));
 
-    case 2:
-        return (QColor(158,158,255));
+        case 2:
+            return (QColor(158,158,255));
 
-    case 3:
-        return (QColor(255,255,255));
+        case 3:
+            return (QColor(255,255,255));
 
-    default:
-        return (QColor(255,255,255));
+        default:
+            return (QColor(255,255,255));
+        }
+    } else {
+        switch( relation )
+        {
+        case 0:
+           return (QColor(255,158,158));
+
+        case 1:
+           return (QColor(158,255,158));
+
+        case 2:
+            return (QColor(158,158,255));
+
+        case 3:
+            return (QColor(255,255,255));
+
+        default:
+            return (QColor(255,255,255));
+        }
     }
 }
 
@@ -49,10 +70,8 @@ void CustomTextEdit::setRelationMap(const std::map<int, std::pair<int, int> > &v
                 QTextCursor cursor(block);
                 QTextBlockFormat blockFormat = cursor.blockFormat();
                 int val = it->second.first;
-                if(isLeft && val == 0)
-                    blockFormat.setBackground(getColor(1));
-                else
-                    blockFormat.setBackground(getColor(it->second.first));
+
+                blockFormat.setBackground(getColor(it->second.first));
                 cursor.setBlockFormat(blockFormat);
                 if(it->second.second > biggestRelationNumber)
                 {
