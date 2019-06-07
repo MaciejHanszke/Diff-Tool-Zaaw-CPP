@@ -24,6 +24,7 @@ class CustomTextEdit : public QPlainTextEdit
     //potrzebne sa 3 wartosci: linia w której został dokonany edit, typ editu(add/delete), oraz numer relacji
     std::map<int, std::pair<int,int>>relationMap;
     int biggestRelationNumber = 0;
+    bool isLeft = false;
 
 public:
     CustomTextEdit(QWidget *parent = 0);
@@ -42,6 +43,10 @@ public:
     int getRelationAreaWidth();
     QLabel *getCursorCurPos() const;
     void setCursorCurPos(QLabel *value);
+
+
+    bool getIsLeft() const;
+    void setIsLeft(bool value);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

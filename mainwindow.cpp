@@ -1,4 +1,5 @@
 #include "customtextedit.h"
+#include "lcs.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtWidgets>
@@ -16,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     window->setLayout(ui->horizontalLayout);
     setCentralWidget(window);
     QMainWindow::showMaximized();
+    ui->textEditFile1->setIsLeft(true);
     ui->textEditFile1->setCursorCurPos(ui->file1_cursor_pos_text);
     ui->textEditFile2->setCursorCurPos(ui->file2_cursor_pos_text);
 }
@@ -54,16 +56,8 @@ void MainWindow::on_actionLoad_File_1_triggered()
                 ui->saveFile1Button->setEnabled(true);
                 ui->textEditFile1->setEnabled(true);
             }
-        std::map<int, std::pair<int,int>>map;
-        map[0] = std::pair<int,int>(1,0);
-        map[1] = std::pair<int,int>(1,0);
-        map[4] = std::pair<int,int>(2,1);
-        map[5] = std::pair<int,int>(3,2);
-        map[6] = std::pair<int,int>(3,2);
-        map[7] = std::pair<int,int>(3,2);
 
-        ui->textEditFile1->setRelationMap(map);
-
+    applyRelationsToTextEdits();
 }
 
 void MainWindow::on_actionLoad_File_2_triggered()
@@ -76,13 +70,42 @@ void MainWindow::on_actionLoad_File_2_triggered()
                 ui->textEditFile2->setEnabled(true);
             }
 
-    std::map<int, std::pair<int,int>>map2;
-    map2[0] = std::pair<int,int>(2,0);
-    map2[3] = std::pair<int,int>(1,1);
-    map2[11] = std::pair<int,int>(3,2);
-    map2[12] = std::pair<int,int>(3,2);
-    map2[13] = std::pair<int,int>(3,2);
-    ui->textEditFile2->setRelationMap(map2);
+    applyRelationsToTextEdits();
+}
+
+void MainWindow::applyRelationsToTextEdits(){
+    if(file1 != "" && file2 != "")
+    {
+        QString textLeft = ui->textEditFile1->toPlainText();
+        QString textRight = ui->textEditFile2->toPlainText();
+        QStringList listLeft =  textLeft.split("\n"); //tu wstaw texty
+        QStringList listRight = textRight.split("\n");
+        std::map<int, std::pair<int,int>>map;
+        Lcs l;
+        l.initiate(textLeft, textRight);
+        for(int i=0; i<listLeft.size();++i){
+           std::pair<int, int> p = std::make_pair(l.getRelationTypeLeft(i),
+                                                        l.getRelationIndexLeft(i));
+           std::pair<int, std::pair<int,int>> ip = std::make_pair(i, p);
+           map.insert(ip);
+        }
+
+        ui->textEditFile1->setRelationMap(map);
+
+
+        Lcs r;
+        l.initiate(textRight, textLeft);
+        std::map<int, std::pair<int,int>>map2;
+
+        for(int i=0; i<listLeft.size();++i){
+           std::pair<int, int> p = std::make_pair(l.getRelationTypeRight(i),
+                                                        l.getRelationIndexRight(i));
+           std::pair<int, std::pair<int,int>> ip = std::make_pair(i, p);
+           map2.insert(ip);
+        }
+
+        ui->textEditFile2->setRelationMap(map2);
+    }
 }
 
 void MainWindow::on_actionSave_File_1_triggered()
