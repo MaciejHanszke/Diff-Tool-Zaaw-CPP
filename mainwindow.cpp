@@ -58,7 +58,9 @@ void MainWindow::on_actionLoad_File_1_triggered()
         map[0] = std::pair<int,int>(1,0);
         map[1] = std::pair<int,int>(1,0);
         map[4] = std::pair<int,int>(2,1);
-        map[8] = std::pair<int,int>(3,2);
+        map[5] = std::pair<int,int>(3,2);
+        map[6] = std::pair<int,int>(3,2);
+        map[7] = std::pair<int,int>(3,2);
 
         ui->textEditFile1->setRelationMap(map);
 
@@ -73,6 +75,14 @@ void MainWindow::on_actionLoad_File_2_triggered()
                 ui->saveFile2Button->setEnabled(true);
                 ui->textEditFile2->setEnabled(true);
             }
+
+    std::map<int, std::pair<int,int>>map2;
+    map2[0] = std::pair<int,int>(2,0);
+    map2[3] = std::pair<int,int>(1,1);
+    map2[11] = std::pair<int,int>(3,2);
+    map2[12] = std::pair<int,int>(3,2);
+    map2[13] = std::pair<int,int>(3,2);
+    ui->textEditFile2->setRelationMap(map2);
 }
 
 void MainWindow::on_actionSave_File_1_triggered()
